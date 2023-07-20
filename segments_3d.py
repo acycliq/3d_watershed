@@ -7,7 +7,7 @@ import diplib as dip
 from utils import colourise, unpack
 
 
-def main(bw_img):
+def watershed(bw_img):
     # Image.fromarray(bw_img).save(r'.\debug\bw_img.jpg')
 
     # shrink the shapes by a few pixels
@@ -48,7 +48,7 @@ def app(masks_url, background_url):
     # background = background[21:23, 4024:4247, 1952:2226]
     # array_3d = array_3d[21:23, 4024:4247, 1952:2226]
 
-    labels = main(array_3d)
+    labels = watershed(array_3d)
 
     rgb_masks = colourise(labels, background)
     unpack(rgb_masks, r"microglia_backround_images\masks3d_maxDepth1.5", mode="RGB", make_tiles=True)

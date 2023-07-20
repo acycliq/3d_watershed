@@ -97,7 +97,7 @@ def remove_small_cells(cell_labels, min_size=5):
     return cell_labels.astype(np.uint64), label_map
 
 
-def main(bw_img):
+def watershed(bw_img):
     Image.fromarray(bw_img).save(r'.\debug\bw_img.jpg')
 
     # shrink the shapes by a few pixels
@@ -137,7 +137,7 @@ def app(masks_url, background_url):
 
     labels_list = []
     for i, img in enumerate(array_3d):
-        lbl = main(img)
+        lbl = watershed(img)
         labels_list.append(lbl)
     labels = np.stack(labels_list)
 

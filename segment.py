@@ -186,16 +186,24 @@ def stitch3D_coo(masks, stitch_threshold=0.25):
 
 
 def remove_small_cells(i, cell_labels, min_size=5):
-    # p_cut = 2
     regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
-    # min_size = np.percentile(regions.area, p_cut)
-    # logger.info("the %dth percentile is: %d" % (p_cut, min_size))
     small_cells = regions[regions.area <= min_size]
     logger.info("image: %d: Found %d cells with area less than %d" % (i, small_cells.shape[0], min_size))
 
     # remove small cells
     cell_labels = fastremap.mask(cell_labels, small_cells.label.values)
     cell_labels, label_map = fastremap.renumber(cell_labels, in_place=False)
+
+
+    p_cut = 2
+    regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
+    min_size = np.percentile(regions.area, p_cut)
+    logger.info("the %dth percentile is: %d" % (p_cut, min_size))
+    small_cells = regions[regions.area <= min_size]
+
+    cell_labels = fastremap.mask(cell_labels, small_cells.label.values)
+    cell_labels, label_map = fastremap.renumber(cell_labels, in_place=False)
+
     return cell_labels.astype(np.uint64), label_map
 
 
@@ -226,11 +234,12 @@ def watershed(i, bw_img):
     return cell_labels
 
 
-def app(masks_url, background_url):
-    image_3d = skimage.io.imread(background_url)
+# def main(masks_url, background_url):
+def main(opts):
+    image_3d = skimage.io.imread(opts['background_url'])
     # image_3d = image_3d[20:30]
 
-    bw_masks = skimage.io.imread(masks_url)
+    bw_masks = skimage.io.imread(opts['masks_url'])
     # bw_masks = bw_masks[20:30]
 
     ## for debugging use
@@ -239,8 +248,13 @@ def app(masks_url, background_url):
 
     labels_list = []
     for i, img in enumerate(bw_masks):
-        lbl = watershed(i, img)
-        labels_list.append(lbl)
+        if i in opts['exclude_pages']:
+            logger.info('Skipping page % d' % i)
+            lbl = np.zeros(img.shape)
+            labels_list.append(lbl)
+        else:
+            lbl = watershed(i, img)
+            labels_list.append(lbl)
     labels = np.stack(labels_list)
 
     # logger.info('stitch3D starts')
@@ -266,5 +280,5 @@ if __name__ == "__main__":
     # page_list = [46, 47, 48]
     bw_masks_tif = r".\microglia\bw_image.tiff"  # black and white image
     image_3d_tiff = r'.\microglia\adj_img.tiff'  # the background after all the adjustments
-    app(bw_masks_tif, image_3d_tiff)
+    main(bw_masks_tif, image_3d_tiff)
 

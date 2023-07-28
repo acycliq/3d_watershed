@@ -3,7 +3,7 @@ import segment
 from base_logger import logger
 
 
-def app(opts):
+def main(opts):
     if opts['do_preprocess']:
         key = 'microglia'
         for val in opts.key(key):
@@ -21,5 +21,5 @@ if __name__ == "__main__":
         'masks_url': r".\microglia\bw_image.tiff", # black and white image
         'background_url': r'.\microglia\adj_img.tiff',
     }
-    app(opts)
+    main(opts)
     logger.info('Done')

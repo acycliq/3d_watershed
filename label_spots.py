@@ -33,4 +33,5 @@ if __name__ == "__main__":
     spots_url = r"F:\data\Christina\3D_watershed\spots_WT997_icvAB_OMP_restitched.csv"
     spots_df = pd.read_csv(spots_url)
     masks = np.load(r".\microglia\stitched_masks.npy")
-    label_spots(spots_df, masks)
+    out = label_spots(spots_df, masks)
+    print(out.head())

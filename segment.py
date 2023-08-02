@@ -1,7 +1,9 @@
 from scipy.ndimage import generate_binary_structure
 from numba import jit
 import pandas as pd
+import os
 import numpy as np
+from pathlib import Path
 from PIL import Image
 from skimage import morphology
 from skimage.measure import regionprops_table
@@ -188,7 +190,8 @@ def stitch3D_coo(masks, stitch_threshold=0.25):
 def remove_small_cells(i, cell_labels, min_size=5):
     regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
     small_cells = regions[regions.area <= min_size]
-    logger.info("image: %d: Found %d cells with area less than %d" % (i, small_cells.shape[0], min_size))
+    logger.info("image: %d: Removing small shapes" % i)
+    # logger.info("image: %d: Found %d shapes with area less than %d" % (i, small_cells.shape[0], min_size))
 
     # remove small cells
     cell_labels = fastremap.mask(cell_labels, small_cells.label.values)
@@ -198,7 +201,7 @@ def remove_small_cells(i, cell_labels, min_size=5):
     p_cut = 2
     regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
     min_size = np.percentile(regions.area, p_cut)
-    logger.info("the %dth percentile is: %d" % (p_cut, min_size))
+    # logger.info("the %dth percentile is: %d" % (p_cut, min_size))
     small_cells = regions[regions.area <= min_size]
 
     cell_labels = fastremap.mask(cell_labels, small_cells.label.values)
@@ -235,11 +238,11 @@ def watershed(i, bw_img):
 
 
 # def main(masks_url, background_url):
-def main(opts):
-    image_3d = skimage.io.imread(opts['background_url'])
+def main(bw_masks, image_3d, opts):
+    # image_3d = skimage.io.imread(opts['background_url'])
     # image_3d = image_3d[20:30]
 
-    bw_masks = skimage.io.imread(opts['masks_url'])
+    # bw_masks = skimage.io.imread(opts['masks_url'])
     # bw_masks = bw_masks[20:30]
 
     ## for debugging use
@@ -247,12 +250,15 @@ def main(opts):
     # array_3d = array_3d[21:23, 4024:4247, 1952:2226]
 
     labels_list = []
+    good_pages = []
     for i, img in enumerate(bw_masks):
         if i in opts['exclude_pages']:
-            logger.info('Skipping page % d' % i)
+            logger.info('Skipping watershed on page % d' % i)
             lbl = np.zeros(img.shape)
             labels_list.append(lbl)
         else:
+            logger.info('Doing watershed on page % d' % i)
+            good_pages.append(i)
             lbl = watershed(i, img)
             labels_list.append(lbl)
     labels = np.stack(labels_list)
@@ -261,20 +267,26 @@ def main(opts):
     # stitched_labels = stitch3D(labels.astype(np.uint64), stitch_threshold=0.009)
     # logger.info('stitch3D finishes')
 
-    logger.info('stitch3D_coo starts')
+    logger.info('stitching the 2d masks')
     stitched_labels_2 = stitch3D_coo(labels.astype(np.uint64), stitch_threshold=0.009)
-    logger.info('stitch3D_coo startsfinishes')
+    logger.info('stitching finished')
 
-    out_npy = r'.\microglia\stitched_masks.npy'
+    target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug')
+    Path(target_dir).mkdir(parents=True, exist_ok=True)
+
+    out_npy = os.path.join(target_dir, 'stitched_masks.npy')
     np.save(out_npy, stitched_labels_2)
     logger.info('stitched_masks saved at %s' % out_npy)
 
-    rgb_masks = colourise(stitched_labels_2, image_3d)
-    unpack(rgb_masks, r".\microglia", mode="RGB", make_tiles=False)
-    # Image.fromarray(rgb_masks[10].astype(np.uint8), "RGB")
-    logger.info("Done!")
+    good_pages = good_pages[:20]
+    rgb_masks = colourise(stitched_labels_2[good_pages], image_3d[good_pages])
 
-    # array_3d = array_3d.transpose(2, 0, 1)
+    dir_name = os.path.join(target_dir, 'segmentation_samples')
+    Path(dir_name).mkdir(parents=True, exist_ok=True)
+    unpack(rgb_masks, dir_name, mode="RGB", make_tiles=False, page_ids=good_pages)
+    # # Image.fromarray(rgb_masks[10].astype(np.uint8), "RGB")
+    # logger.info("Done!")
+
 
 if __name__ == "__main__":
     # page_list = [46, 47, 48]

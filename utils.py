@@ -6,6 +6,7 @@ from PIL import Image
 from skimage.color import label2rgb
 from skimage.util import img_as_ubyte
 from skimage import morphology, restoration
+from base_logger import logger
 
 
 def rgb2hex(rgb):
@@ -87,7 +88,7 @@ def overlay(cell_labels, background):
     return out
 
 
-def unpack(stack, out_dir, mode=None, make_tiles=False):
+def unpack(stack, out_dir, mode=None, make_tiles=False, page_ids=None):
     '''
     reads a 3d tiff image and unpacks it
     :param stack:
@@ -95,21 +96,25 @@ def unpack(stack, out_dir, mode=None, make_tiles=False):
     :return:
     '''
     img_depth = stack.shape[0]
-    print("image has %d pages" %  img_depth)
+    logger.info("image has %d pages" %  img_depth)
     for n in range(img_depth):
         img = stack[n].astype(np.uint8)
-        fName = os.path.join(out_dir, "page_%03d.jpg" % n)
+        if page_ids is not None:
+            page_num = page_ids[n]
+        else:
+            page_num = n
+        fName = os.path.join(out_dir, "page_%03d.jpg" % page_num)
         Image.fromarray(img, mode=mode).save(fName)
-        print("Image was saved at %s" % fName)
-        tiles_dir = os.path.join(out_dir, "tiles", "page_%03d" % n)
+        logger.info("Image was saved at %s" % fName)
+        tiles_dir = os.path.join(out_dir, "tiles", "page_%03d" % page_num)
         if (img.max() > 0) and make_tiles:
             pciSeq.tile_maker(fName, z_depth=7, out_dir=tiles_dir)
-            print("tiles created at was saved at %s" % tiles_dir)
+            logger.info("tiles created at was saved at %s" % tiles_dir)
         else:
-            print("Image %s is totally empty. Skipping the tile maker..." % fName)
+            logger.info("Image %s is totally empty or make_tiles is set to False. Skipping the tile maker..." % fName)
 
 
-def adjust_image(img, n):
+def adjust_image(img, n, cfg):
     '''
     takes in an image (grayscale, uint8) and adds some contrast.
     Returns an array uint8
@@ -120,13 +125,16 @@ def adjust_image(img, n):
     lims = _stretchlim(img)
     dapi_adj = _imadjust2(img, lims)
 
-    print("rolling_ball")
-    background = restoration.rolling_ball(dapi_adj)
-    Image.fromarray(background.astype(np.uint8)).save("background_%d.jpg" % n)
-    dapi_restored = dapi_adj - background
-    # Image.fromarray(dapi_restored.astype(np.uint8)).save("dapi_restored.tif")
+    if cfg['do_rolling_ball']:
+        logger.info("rolling_ball")
+        background = restoration.rolling_ball(dapi_adj)
+        Image.fromarray(background.astype(np.uint8)).save("background_%d.jpg" % n)
+        dapi_restored = dapi_adj - background
+        # Image.fromarray(dapi_restored.astype(np.uint8)).save("dapi_restored.tif")
+    else:
+        dapi_restored = dapi_adj
 
-    print("adaptiveThreshold")
+    # logger.info("adaptiveThreshold")
     mask = cv2.adaptiveThreshold(dapi_restored.astype(np.uint8),
                                  255,
                                  cv2.ADAPTIVE_THRESH_GAUSSIAN_C,

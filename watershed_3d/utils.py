@@ -96,7 +96,7 @@ def unpack(stack, out_dir, mode=None, make_tiles=False, page_ids=None):
     :return:
     '''
     img_depth = stack.shape[0]
-    logger.info("image has %d pages" %  img_depth)
+    # logger.info("image has %d pages" %  img_depth)
     for n in range(img_depth):
         img = stack[n].astype(np.uint8)
         if page_ids is not None:
@@ -105,11 +105,11 @@ def unpack(stack, out_dir, mode=None, make_tiles=False, page_ids=None):
             page_num = n
         fName = os.path.join(out_dir, "page_%03d.jpg" % page_num)
         Image.fromarray(img, mode=mode).save(fName)
-        logger.info("Image was saved at %s" % fName)
+        # logger.info("Image was saved at %s" % fName)
         tiles_dir = os.path.join(out_dir, "tiles", "page_%03d" % page_num)
         if (img.max() > 0) and make_tiles:
             pciSeq.tile_maker(fName, z_depth=7, out_dir=tiles_dir)
-            logger.info("tiles created at was saved at %s" % tiles_dir)
+            # logger.info("tiles created at was saved at %s" % tiles_dir)
         # else:
         #     logger.info("Image %s is totally empty or make_tiles is set to False. Skipping the tile maker..." % fName)
 

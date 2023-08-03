@@ -179,7 +179,11 @@ def stitch3D_coo(masks, stitch_threshold=0.25):
             # iou[iou < iou.max(axis=0)] = 0.0
             istitch = iou_coo.argmax(axis=1) + 1
             istitch = np.asarray(istitch).flatten()
-            ino = np.nonzero(iou_coo.max(axis=1)==0.0)[0]
+            max_axis1 = iou_coo.max(axis=1)
+            max_axis1_arr = max_axis1.toarray()
+            ino = np.nonzero(max_axis1_arr == 0.0)[0]
+            # ino_2 = np.nonzero(iou_coo.max(axis=1)==0.0)[0]
+            # assert np.all(ino==ino_2)
             istitch[ino] = np.arange(mmax+1, mmax+len(ino)+1, 1, int)
             mmax += len(ino)
             istitch = np.append(np.array(0), istitch)
@@ -190,7 +194,7 @@ def stitch3D_coo(masks, stitch_threshold=0.25):
 def remove_small_cells(i, cell_labels, min_size=5):
     regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
     small_cells = regions[regions.area <= min_size]
-    logger.info("image: %d: Removing small shapes" % i)
+    # logger.info("image: %d: Removing small shapes" % i)
     # logger.info("image: %d: Found %d shapes with area less than %d" % (i, small_cells.shape[0], min_size))
 
     # remove small cells
@@ -235,6 +239,7 @@ def watershed(i, bw_img, opts):
                                       )
     # logger.info('max distance %f' % distance.max())
     cell_labels = np.array(cell_labels)
+
     cell_labels, _ = remove_small_cells(i, cell_labels)
     return cell_labels
 
@@ -289,7 +294,9 @@ def main(bw_masks, image_3d, opts):
     Path(dir_name).mkdir(parents=True, exist_ok=True)
     unpack(rgb_masks, dir_name, mode="RGB", make_tiles=False, page_ids=good_pages)
     # # Image.fromarray(rgb_masks[10].astype(np.uint8), "RGB")
-    # logger.info("Done!")
+    logger.info("Saved some segmented images at %s" % dir_name)
+
+    return stitched_labels_2
 
 
 if __name__ == "__main__":

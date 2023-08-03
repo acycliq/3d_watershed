@@ -271,7 +271,7 @@ def main(bw_masks, image_3d, opts):
     stitched_labels_2 = stitch3D_coo(labels.astype(np.uint64), stitch_threshold=0.009)
     logger.info('stitching finished')
 
-    target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug')
+    target_dir = os.path.join(Path(opts['microglia_image']).parent, '../debug')
     Path(target_dir).mkdir(parents=True, exist_ok=True)
 
     out_npy = os.path.join(target_dir, 'stitched_masks.npy')

@@ -15,7 +15,7 @@ if __name__ == "__main__":
     opts = {
         # 'do_3d': False,
         'do_rolling_ball': False,
-        'microglia_image':  os.path.join(ROOT_DIR, 'data', 'microglia_ WT997_icvAB_Iba1_retiled.tif'),
+        'microglia_image':  os.path.join(ROOT_DIR, '../data', 'microglia_ WT997_icvAB_Iba1_retiled.tif'),
         # 'exclude_pages': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 64, 65],
         'exclude_pages': np.hstack([np.arange(20), 25+np.arange(66-25)])
         # 'masks_url': r".\microglia\bw_image.tiff", # black and white image

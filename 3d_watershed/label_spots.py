@@ -10,13 +10,13 @@ def label_spots(spots, masks):
     z_stacks = np.unique(spots.z_stack)
 
     pool = ThreadPool(cpu_count())
-    out = pool.map(loop_body(spots, masks), z_stacks)
+    out = pool.map(wrapper(spots, masks), z_stacks)
     out = pd.concat(out)
     logger.info(out.shape)
     return out
 
-
-def loop_body(spots, masks):
+# todo: decorate this!
+def wrapper(spots, masks):
     def inner_fun(z):
         df = spots[spots.z_stack == z].copy()
         mask = masks[int(np.floor(z))]

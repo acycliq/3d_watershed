@@ -1,7 +1,7 @@
 from scipy.sparse import csr_matrix
 import numpy as np
 import pandas as pd
-from base_logger import logger
+from watershed_3d.base_logger import logger
 from multiprocessing import cpu_count
 from multiprocessing.dummy import Pool as ThreadPool
 

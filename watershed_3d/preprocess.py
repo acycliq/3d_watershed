@@ -6,8 +6,8 @@ import numpy as np
 from pathlib import Path
 import os
 import tifffile as tif
-from utils import adjust_image
-from base_logger import logger
+from watershed_3d.utils import adjust_image
+from watershed_3d.base_logger import logger
 
 
 def stack_to_images(cfg):
@@ -28,7 +28,7 @@ def stack_to_images(cfg):
         mask_list.append(bw_mask)
         img_list.append(adj_img)
 
-    target_dir = os.path.join(Path(filename).parent, '../debug')
+    target_dir = os.path.join(Path(filename).parent, 'debug')
     Path(target_dir).mkdir(parents=True, exist_ok=True)
 
     bw_arr = np.stack(mask_list).astype(np.uint8)

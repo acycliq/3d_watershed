@@ -11,9 +11,9 @@ import skimage.io
 import fastremap
 from scipy import ndimage
 import diplib as dip
-from utils import colourise, unpack
 from scipy.sparse import coo_matrix, csr_matrix, csc_matrix
-from base_logger import logger
+from watershed_3d.utils import colourise, unpack
+from watershed_3d.base_logger import logger
 
 
 def intersection_over_union(masks_true, masks_pred):
@@ -210,14 +210,16 @@ def remove_small_cells(i, cell_labels, min_size=5):
     return cell_labels.astype(np.uint64), label_map
 
 
-def watershed(i, bw_img):
-    Image.fromarray(bw_img).save(r'.\microglia\debug\bw_img_%03d.jpg' % i)
+def watershed(i, bw_img, opts):
+
+    target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug', 'bw_images')
+    Path(target_dir).mkdir(parents=True, exist_ok=True)
+    Image.fromarray(bw_img).save(os.path.join(target_dir, 'bw_img_%03d.jpg' % i))
 
     # shrink the shapes by a few pixels
     s = generate_binary_structure(2, 1)
     bw_eroded = morphology.erosion(bw_img == 255, s)
     bw_eroded = bw_eroded.astype(np.uint8)
-    Image.fromarray(bw_img).save(r'.\microglia\debug\bw_eroded_%03d.jpg' % i)
 
     # for each shape get the distance from the closest zero-valued pixel
     distance = ndimage.distance_transform_edt(bw_eroded)
@@ -259,7 +261,7 @@ def main(bw_masks, image_3d, opts):
         else:
             logger.info('Doing watershed on page % d' % i)
             good_pages.append(i)
-            lbl = watershed(i, img)
+            lbl = watershed(i, img, opts)
             labels_list.append(lbl)
     labels = np.stack(labels_list)
 
@@ -271,7 +273,7 @@ def main(bw_masks, image_3d, opts):
     stitched_labels_2 = stitch3D_coo(labels.astype(np.uint64), stitch_threshold=0.009)
     logger.info('stitching finished')
 
-    target_dir = os.path.join(Path(opts['microglia_image']).parent, '../debug')
+    target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug')
     Path(target_dir).mkdir(parents=True, exist_ok=True)
 
     out_npy = os.path.join(target_dir, 'stitched_masks.npy')

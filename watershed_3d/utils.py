@@ -6,7 +6,7 @@ from PIL import Image
 from skimage.color import label2rgb
 from skimage.util import img_as_ubyte
 from skimage import morphology, restoration
-from base_logger import logger
+from watershed_3d.base_logger import logger
 
 
 def rgb2hex(rgb):

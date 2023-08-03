@@ -1,8 +1,8 @@
-from preprocess import stack_to_images
-import segment
 import numpy as np
 import os
-from base_logger import logger
+from watershed_3d.preprocess import stack_to_images
+import watershed_3d.segment as segment
+from watershed_3d.base_logger import logger
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 

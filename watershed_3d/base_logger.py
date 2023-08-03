@@ -1,7 +1,7 @@
 import logging
 
 # Create our demo logger
-logger = logging.getLogger('3d_watershed')
+logger = logging.getLogger('watershed_3d')
 # Set a log level for the logger
 logger.setLevel(logging.INFO)
 # Create a console handler

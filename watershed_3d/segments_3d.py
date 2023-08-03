@@ -4,7 +4,7 @@ import numpy as np
 from skimage import morphology
 import skimage.io
 import diplib as dip
-from utils import colourise, unpack
+from watershed_3d.utils import colourise, unpack
 
 
 def watershed(bw_img):

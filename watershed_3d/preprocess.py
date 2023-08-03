@@ -17,13 +17,14 @@ def stack_to_images(cfg):
 
     mask_list = []
     img_list = []
+    logger.info('Adjusting the image')
     for i in range(n):
         if i in cfg['exclude_pages']:
-            logger.info('Skipping page %d. It is in the exclude list' % i)
+            # logger.info('Skipping page %d. It is in the exclude list' % i)
             bw_mask = np.zeros(image_3d.shape[1:])
             adj_img = np.zeros(image_3d.shape[1:])
         else:
-            logger.info('adjusting page %d out of %d' % (i + 1, n))
+            # logger.info('adjusting page %d out of %d' % (i + 1, n))
             bw_mask, adj_img = adjust_image(image_3d[i], i, cfg)
         mask_list.append(bw_mask)
         img_list.append(adj_img)

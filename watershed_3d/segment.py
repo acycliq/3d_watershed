@@ -140,7 +140,7 @@ def stitch3D(masks, stitch_threshold=0.25):
     """ stitch 2D masks into 3D volume with stitch_threshold on IOU """
     mmax = masks[0].max()
     for i in range(len(masks)-1):
-        logger.info('stitching mask %d ' % i)
+        # logger.info('stitching mask %d ' % i)
         iou = intersection_over_union(masks[i + 1], masks[i])[1:, 1:]
         if iou.size > 0:
             iou[iou < stitch_threshold] = 0.0
@@ -158,7 +158,7 @@ def stitch3D_coo(masks, stitch_threshold=0.25):
     """ stitch 2D masks into 3D volume with stitch_threshold on IOU """
     mmax = masks[0].max()
     for i in range(len(masks)-1):
-        logger.info('stitching mask %d ' % i)
+        # logger.info('stitching mask %d ' % i)
         iou_coo = intersection_over_union_2(masks[i+1], masks[i])
         # iou = iou_coo.toarray()[1:, 1:]
 
@@ -253,17 +253,19 @@ def main(bw_masks, image_3d, opts):
 
     labels_list = []
     good_pages = []
+    logger.info('Started watershed')
     for i, img in enumerate(bw_masks):
         if i in opts['exclude_pages']:
-            logger.info('Skipping watershed on page % d' % i)
+            # logger.info('Skipping watershed on page % d' % i)
             lbl = np.zeros(img.shape)
             labels_list.append(lbl)
         else:
-            logger.info('Doing watershed on page % d' % i)
+            # logger.info('Doing watershed on page % d' % i)
             good_pages.append(i)
             lbl = watershed(i, img, opts)
             labels_list.append(lbl)
     labels = np.stack(labels_list)
+    logger.info('Finished watershed')
 
     # logger.info('stitch3D starts')
     # stitched_labels = stitch3D(labels.astype(np.uint64), stitch_threshold=0.009)

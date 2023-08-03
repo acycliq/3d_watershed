@@ -110,8 +110,8 @@ def unpack(stack, out_dir, mode=None, make_tiles=False, page_ids=None):
         if (img.max() > 0) and make_tiles:
             pciSeq.tile_maker(fName, z_depth=7, out_dir=tiles_dir)
             logger.info("tiles created at was saved at %s" % tiles_dir)
-        else:
-            logger.info("Image %s is totally empty or make_tiles is set to False. Skipping the tile maker..." % fName)
+        # else:
+        #     logger.info("Image %s is totally empty or make_tiles is set to False. Skipping the tile maker..." % fName)
 
 
 def adjust_image(img, n, cfg):

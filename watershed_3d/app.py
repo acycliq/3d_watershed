@@ -7,7 +7,7 @@ from watershed_3d.base_logger import logger
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def main(image_url=None, exclude_pages=None, do_rolling_ball=False):
+def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
     """
     Main entry point for 3d watershed segmentation
     image_url: Path to your 3d image to be segmented with watershed. Format must be ZYX
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     image_url = os.path.join(ROOT_DIR, '..', 'data', 'microglia_ WT997_icvAB_Iba1_retiled.tif')
     exclude_pages = np.hstack([np.arange(20), 25+np.arange(66-25)])
 
-    main(image_url=image_url,
+    app(image_url=image_url,
          exclude_pages=exclude_pages,
          do_rolling_ball=do_rolling_ball)
     logger.info('Done')

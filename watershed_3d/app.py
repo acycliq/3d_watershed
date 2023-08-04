@@ -6,19 +6,24 @@ from watershed_3d.base_logger import logger
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-def main(opts):
+
+def main(image_url=None, exclude_pages=None, do_rolling_ball=False):
     """
     Main entry point for 3d watershed segmentation
-    :param opts: Dictionary with the following keys:
-        'do_rolling_ball': Boolean, if trye then the image will be filtered by the rolling-ball
-                            algorithm to correcct for uneven illumination/exposure. Use that on
-                            extreme cases as it increases execution time massively
-        'microglia_image': Path to your 3d image to be segmented with watershed. Format must be ZYX
-        'exclude_pages':    List of integers denoting the pages to be excluded from the segmentation.
+    image_url: Path to your 3d image to be segmented with watershed. Format must be ZYX
+    do_rolling_ball: Boolean, if trye then the image will be filtered by the rolling-ball
+                        algorithm to correct for uneven illumination/exposure. Use that on
+                        extreme cases as it increases execution time massively
+    exclude_pages:    List of integers denoting the pages to be excluded from the segmentation.
 
-    :return: An array of the same size as your image with the segmentation masks. Pages that
+    returns an array of the same size as your image with the segmentation masks. Pages that
     have been excluded are totally black, iw all values are zero
     """
+    assert image_url is not None, "Need to pass the path to your image when you call app()"
+
+    opts = {'microglia_image': image_url,
+            'exclude_pages': exclude_pages,
+            'do_rolling_ball': do_rolling_ball}
 
     bw_arr, adj_arr = stack_to_images(opts)
     out = segment.main(bw_arr, adj_arr, opts)
@@ -26,14 +31,11 @@ def main(opts):
 
 
 if __name__ == "__main__":
-    opts = {
-        # 'do_3d': False,
-        'do_rolling_ball': False,
-        'microglia_image':  os.path.join(ROOT_DIR, '..', 'data', 'microglia_ WT997_icvAB_Iba1_retiled.tif'),
-        # 'exclude_pages': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 64, 65],
-        'exclude_pages': np.hstack([np.arange(20), 25+np.arange(66-25)])
-        # 'masks_url': r".\microglia\bw_image.tiff", # black and white image
-        # 'background_url': r'.\microglia\adj_img.tiff',
-    }
-    main(opts)
+    do_rolling_ball = False
+    image_url = os.path.join(ROOT_DIR, '..', 'data', 'microglia_ WT997_icvAB_Iba1_retiled.tif')
+    exclude_pages = np.hstack([np.arange(20), 25+np.arange(66-25)])
+
+    main(image_url=image_url,
+         exclude_pages=exclude_pages,
+         do_rolling_ball=do_rolling_ball)
     logger.info('Done')

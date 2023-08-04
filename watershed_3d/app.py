@@ -11,7 +11,7 @@ def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
     """
     Main entry point for 3d watershed segmentation
     image_url: Path to your 3d image to be segmented with watershed. Format must be ZYX
-    do_rolling_ball: Boolean, if trye then the image will be filtered by the rolling-ball
+    do_rolling_ball: Boolean, if trye then the image will be processed with the rolling-ball
                         algorithm to correct for uneven illumination/exposure. Use that on
                         extreme cases as it increases execution time massively
     exclude_pages:    List of integers denoting the pages to be excluded from the segmentation.

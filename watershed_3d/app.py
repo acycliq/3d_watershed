@@ -11,7 +11,7 @@ def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
     """
     Main entry point for 3d watershed segmentation
     image_url: Path to your 3d image to be segmented with watershed. Format must be ZYX
-    do_rolling_ball: Boolean, if trye then the image will be processed with the rolling-ball
+    do_rolling_ball: Boolean, if true then the image will be processed with the rolling-ball
                         algorithm to correct for uneven illumination/exposure. Use that on
                         extreme cases as it increases execution time massively
     exclude_pages:    List of integers denoting the pages to be excluded from the segmentation.
@@ -32,10 +32,12 @@ def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
 
 if __name__ == "__main__":
     do_rolling_ball = False
-    image_url = os.path.join(ROOT_DIR, '..', 'data', 'microglia_ WT997_icvAB_Iba1_retiled.tif')
-    exclude_pages = np.hstack([np.arange(20), 25+np.arange(66-25)])
+    image_url = r"/home/dimitris/Desktop/christina/microglia_ WT997_icvAB_Iba1_retiled.tif"
+    bad_pages = list(range(0, 16)) + [65, 66]
+    # image_url = os.path.join(ROOT_DIR, '..', 'data', 'microglia_ WT997_icvAB_Iba1_retiled.tif')
+    # exclude_pages = np.hstack([np.arange(20), 25+np.arange(66-25)])
 
     app(image_url=image_url,
-         exclude_pages=exclude_pages,
-         do_rolling_ball=do_rolling_ball)
+         exclude_pages=bad_pages,
+         do_rolling_ball=False)
     logger.info('Done')

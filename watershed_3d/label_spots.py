@@ -7,6 +7,20 @@ from multiprocessing.dummy import Pool as ThreadPool
 
 
 def label_spots(spots, masks):
+    """
+
+    Parameters
+    ----------
+    spots: Dataframe with yor spots. Columns must include the labels 'x', 'y', 'z_stack'
+    masks: numpy array with the 3d segmentation masks
+
+    Returns: A dataframe, same as the spots dataframe that was passed-in but with an extra
+            column named 'label'. The values in this new column correspond to the label of
+            the object (aka microglia) in the 'masks' numpy array that contains the
+            corresponding spot. If label=0 then the spot is on the background.
+    -------
+
+    """
     z_stacks = np.unique(spots.z_stack)
 
     pool = ThreadPool(cpu_count())
@@ -14,6 +28,7 @@ def label_spots(spots, masks):
     out = pd.concat(out)
     logger.info(out.shape)
     return out
+
 
 # todo: decorate this!
 def wrapper(spots, masks):
@@ -32,6 +47,6 @@ def wrapper(spots, masks):
 if __name__ == "__main__":
     spots_url = r"F:\data\Christina\3D_watershed\spots_WT997_icvAB_OMP_restitched.csv"
     spots_df = pd.read_csv(spots_url)
-    masks = np.load(r"../microglia/stitched_masks.npy")
-    out = label_spots(spots_df, masks)
-    print(out.head())
+    masks_arr = np.load(r"../microglia/stitched_masks.npy")
+    res = label_spots(spots_df, masks_arr)
+    print(res.head())

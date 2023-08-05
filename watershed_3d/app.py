@@ -16,8 +16,8 @@ def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
                         extreme cases as it increases execution time massively
     exclude_pages:    List of integers denoting the pages to be excluded from the segmentation.
 
-    returns an array of the same size as your image with the segmentation masks. Pages that
-    have been excluded are totally black, iw all values are zero
+    returns an array with the segmentation masks. It has same shape as your 3d image. Pages that
+    have been excluded are totally black, ie all values are zero
     """
     assert image_url is not None, "Need to pass the path to your image when you call app()"
 

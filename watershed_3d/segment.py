@@ -216,9 +216,9 @@ def remove_small_cells(i, cell_labels, min_size=5):
 
 def watershed(i, bw_img, opts):
 
-    target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug', 'bw_images')
-    Path(target_dir).mkdir(parents=True, exist_ok=True)
-    Image.fromarray(bw_img).save(os.path.join(target_dir, 'bw_img_%03d.jpg' % i))
+    # target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug', 'bw_images')
+    # Path(target_dir).mkdir(parents=True, exist_ok=True)
+    # Image.fromarray(bw_img).save(os.path.join(target_dir, 'bw_img_%03d.jpg' % i))
 
     # shrink the shapes by a few pixels
     s = generate_binary_structure(2, 1)

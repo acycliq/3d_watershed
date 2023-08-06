@@ -2,3 +2,5 @@
 *.jpg
 *.tif
 *.tiff
+build/
+*.egg-info

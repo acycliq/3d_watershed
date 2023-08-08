@@ -188,7 +188,7 @@ def stitch3D_coo(masks, stitch_threshold=0.25):
             mmax += len(ino)
             istitch = np.append(np.array(0), istitch)
             masks[i+1] = istitch[masks[i+1]]
-    return masks
+    return masks.astype(np.uint32)
 
 
 def remove_small_cells(i, cell_labels, min_size=5):
@@ -216,9 +216,9 @@ def remove_small_cells(i, cell_labels, min_size=5):
 
 def watershed(i, bw_img, opts):
 
-    target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug', 'bw_images')
-    Path(target_dir).mkdir(parents=True, exist_ok=True)
-    Image.fromarray(bw_img).save(os.path.join(target_dir, 'bw_img_%03d.jpg' % i))
+    # target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug', 'bw_images')
+    # Path(target_dir).mkdir(parents=True, exist_ok=True)
+    # Image.fromarray(bw_img).save(os.path.join(target_dir, 'bw_img_%03d.jpg' % i))
 
     # shrink the shapes by a few pixels
     s = generate_binary_structure(2, 1)
@@ -287,7 +287,7 @@ def main(bw_masks, image_3d, opts):
     np.save(out_npy, stitched_labels_2)
     logger.info('stitched_masks saved at %s' % out_npy)
 
-    good_pages = good_pages[:20]
+    good_pages = good_pages[:5]
     rgb_masks = colourise(stitched_labels_2[good_pages], image_3d[good_pages])
 
     dir_name = os.path.join(target_dir, 'segmentation_samples')

@@ -10,7 +10,7 @@ from watershed_3d.utils import adjust_image
 from watershed_3d.base_logger import logger
 
 
-def stack_to_images(cfg):
+def preprocess(cfg):
     filename = cfg['microglia_image']
     image_3d = skimage.io.imread(filename)
     n = image_3d.shape[0]

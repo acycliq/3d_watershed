@@ -1,13 +1,14 @@
 import numpy as np
 import os
-from watershed_3d.preprocess import stack_to_images
+from watershed_3d.preprocess import preprocess
 import watershed_3d.segment as segment
+import watershed_3d.segments_3d as segment_3d
 from watershed_3d.base_logger import logger
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
+def app(image_url=None, exclude_pages=[], do_rolling_ball=False, mode='2d_stitch', maxDepth=1.0):
     """
     Main entry point for 3d watershed segmentation
     image_url: Path to your 3d image to be segmented with watershed. Format must be ZYX
@@ -15,6 +16,10 @@ def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
                         algorithm to correct for uneven illumination/exposure. Use that on
                         extreme cases as it increases execution time massively
     exclude_pages:    List of integers denoting the pages to be excluded from the segmentation.
+    mode: Should be either '2d_stitch' or '3d'
+    'maxDepth': parameter that controls whether two shapes when their boundaries meet, will be
+                merged or not. Only relevant if mode='3d', otherwise it is ignored.
+
 
     returns an array with the segmentation masks. It has same shape as your 3d image. Pages that
     have been excluded are totally black, ie all values are zero
@@ -23,21 +28,27 @@ def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
 
     opts = {'microglia_image': image_url,
             'exclude_pages': exclude_pages,
-            'do_rolling_ball': do_rolling_ball}
+            'do_rolling_ball': do_rolling_ball,
+            'mode': mode,
+            'maxDepth': maxDepth
+            }
 
-    bw_arr, adj_arr = stack_to_images(opts)
-    out = segment.main(bw_arr, adj_arr, opts)
+    bw_arr, adj_arr = preprocess(opts)
+    if mode == '2d_stitch':
+        out = segment.main(bw_arr, adj_arr, opts)
+    elif mode == '3d':
+        out = segment_3d.main(bw_arr, adj_arr, opts)
+    else:
+        raise Exception
+
     return out
 
 
 if __name__ == "__main__":
     do_rolling_ball = False
-    image_url = r"/home/dimitris/Desktop/christina/microglia_ WT997_icvAB_Iba1_retiled.tif"
-    bad_pages = list(range(0, 16)) + [65, 66]
-    # image_url = os.path.join(ROOT_DIR, '..', 'data', 'microglia_ WT997_icvAB_Iba1_retiled.tif')
-    # exclude_pages = np.hstack([np.arange(20), 25+np.arange(66-25)])
+    image_url = r"E:\data\Christina\MG_segmentation _test\microglia.tiff"
+    mode = '3d'
+    maxDepth = 1.5
 
-    app(image_url=image_url,
-         exclude_pages=bad_pages,
-         do_rolling_ball=False)
+    app(image_url=image_url, mode=mode, maxDepth=maxDepth)
     logger.info('Done')

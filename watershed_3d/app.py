@@ -7,7 +7,7 @@ from watershed_3d.base_logger import logger
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
-def app(image_url=None, exclude_pages=None, do_rolling_ball=False):
+def app(image_url=None, exclude_pages=[], do_rolling_ball=False):
     """
     Main entry point for 3d watershed segmentation
     image_url: Path to your 3d image to be segmented with watershed. Format must be ZYX

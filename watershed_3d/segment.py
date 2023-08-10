@@ -214,7 +214,7 @@ def remove_small_cells(i, cell_labels, min_size=5):
     return cell_labels.astype(np.uint64), label_map
 
 
-def watershed(i, bw_img, opts):
+def watershed(i, bw_img):
 
     # target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug', 'bw_images')
     # Path(target_dir).mkdir(parents=True, exist_ok=True)
@@ -267,7 +267,7 @@ def main(bw_masks, image_3d, opts):
         else:
             # logger.info('Doing watershed on page % d' % i)
             good_pages.append(i)
-            lbl = watershed(i, img, opts)
+            lbl = watershed(i, img)
             labels_list.append(lbl)
     labels = np.stack(labels_list)
     logger.info('Finished watershed')
@@ -287,13 +287,12 @@ def main(bw_masks, image_3d, opts):
     np.save(out_npy, stitched_labels_2)
     logger.info('stitched_masks saved at %s' % out_npy)
 
-    good_pages = good_pages[:5]
+    good_pages = good_pages[:20]
     rgb_masks = colourise(stitched_labels_2[good_pages], image_3d[good_pages])
 
     dir_name = os.path.join(target_dir, 'segmentation_samples')
     Path(dir_name).mkdir(parents=True, exist_ok=True)
-    unpack(rgb_masks, dir_name, mode="RGB", make_tiles=False, page_ids=good_pages)
-    # # Image.fromarray(rgb_masks[10].astype(np.uint8), "RGB")
+    unpack(rgb_masks, dir_name, mode="RGB", make_tiles=True, page_ids=good_pages)
     logger.info("Saved some segmented images at %s" % dir_name)
 
     return stitched_labels_2

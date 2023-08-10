@@ -108,8 +108,8 @@ def unpack(stack, out_dir, mode=None, make_tiles=False, page_ids=None):
         # logger.info("Image was saved at %s" % fName)
         tiles_dir = os.path.join(out_dir, "tiles", "page_%03d" % page_num)
         if (img.max() > 0) and make_tiles:
-            pciSeq.tile_maker(fName, z_depth=7, out_dir=tiles_dir)
-            # logger.info("tiles created at was saved at %s" % tiles_dir)
+            pciSeq.tile_maker(fName, z_depth=6, out_dir=tiles_dir)
+            logger.info("tiles created at was saved at %s" % tiles_dir)
         # else:
         #     logger.info("Image %s is totally empty or make_tiles is set to False. Skipping the tile maker..." % fName)
 

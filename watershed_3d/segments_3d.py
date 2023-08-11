@@ -35,6 +35,7 @@ def watershed_3d(bw_img, cfg):
                                       maxDepth=cfg['maxDepth'],
                                       flags={'labels'}
                                       )
+    logger.info('maxDepth that was passed-in: %f' % cfg['maxDepth'])
     logger.info('max span %f micron' % distance.max())
     cell_labels = np.array(cell_labels)
     return cell_labels

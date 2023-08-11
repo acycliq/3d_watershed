@@ -18,7 +18,10 @@ def app(image_url=None, exclude_pages=[], do_rolling_ball=False, mode='2d_stitch
     exclude_pages:    List of integers denoting the pages to be excluded from the segmentation.
     mode: Should be either '2d_stitch' or '3d'
     'maxDepth': parameter that controls whether two shapes when their boundaries meet, will be
-                merged or not. Only relevant if mode='3d', otherwise it is ignored.
+                merged or not. Is it is set too high then you will end up with an undersegmented
+                image (few and very large shapes). If it is too low, then you will have an
+                oversegmented image (too many and probably small shapes). maxDepth is only
+                relevant if mode='3d', otherwise it is ignored.
 
 
     returns an array with the segmentation masks. It has same shape as your 3d image. Pages that

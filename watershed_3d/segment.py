@@ -290,7 +290,7 @@ def main(bw_masks, image_3d, opts):
     good_pages = good_pages[:20]
     rgb_masks = colourise(stitched_labels_2[good_pages], image_3d[good_pages])
 
-    dir_name = os.path.join(target_dir, 'segmentation_samples')
+    dir_name = os.path.join(target_dir, '2d_stitched_segmentation_samples')
     Path(dir_name).mkdir(parents=True, exist_ok=True)
     unpack(rgb_masks, dir_name, mode="RGB", make_tiles=True, page_ids=good_pages)
     logger.info("Saved some segmented images at %s" % dir_name)

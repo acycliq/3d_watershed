@@ -35,7 +35,7 @@ def watershed_3d(bw_img, cfg):
                                       maxDepth=cfg['maxDepth'],
                                       flags={'labels'}
                                       )
-    print('max span %f micron' % distance.max())
+    logger.info('max span %f micron' % distance.max())
     cell_labels = np.array(cell_labels)
     return cell_labels
 
@@ -55,12 +55,12 @@ def main(bw_masks, image_3d, opts):
 
     ## duplicated code here. Same as in the main() of segment.py. Maybe make a function!
     good_pages = sorted(set(np.arange(133)) - set(opts['exclude_pages']))
-    good_pages = good_pages[:20]
+    good_pages = good_pages[:5]
     rgb_masks = colourise(labels[good_pages], image_3d[good_pages])
 
     dir_name = os.path.join(target_dir, '3d_segmentation_samples')
     Path(dir_name).mkdir(parents=True, exist_ok=True)
-    unpack(rgb_masks, dir_name, mode="RGB", make_tiles=True, page_ids=good_pages)
+    unpack(rgb_masks, dir_name, mode="RGB", make_tiles=False, page_ids=good_pages)
     logger.info("Saved some segmented images at %s" % dir_name)
 
     return labels

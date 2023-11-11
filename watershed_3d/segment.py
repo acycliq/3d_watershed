@@ -277,7 +277,7 @@ def main(bw_masks, image_3d, opts):
     # logger.info('stitch3D finishes')
 
     logger.info('stitching the 2d masks')
-    stitched_labels_2 = stitch3D_coo(labels.astype(np.uint64), stitch_threshold=0.009)
+    stitched_labels_2 = stitch3D_coo(labels.astype(np.uint64), stitch_threshold=opts['stitch_threshold'])
     logger.info('stitching finished')
 
     target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug')

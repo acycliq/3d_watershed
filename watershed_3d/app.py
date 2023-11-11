@@ -2,7 +2,7 @@ import numpy as np
 import os
 from watershed_3d.preprocess import preprocess
 import watershed_3d.segment as segment
-import watershed_3d.segments_3d as segment_3d
+import watershed_3d.segment_3d as segment_3d
 from watershed_3d.base_logger import logger
 
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))

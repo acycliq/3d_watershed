@@ -8,7 +8,8 @@ from setuptools import setup, find_packages
 
 install_deps = ['tifffile', 'scipy', 'numba', 'pandas', 'numpy',
                 'scikit-image', 'scikit-learn', 'fastremap', 'diplib',
-                'edt', 'pciSeq', 'opencv-python', 'Pillow', 'jupyterlab']
+                'edt', 'pciSeq', 'opencv-python-headless', 'Pillow', 'jupyterlab',
+                'ipywidgets']
 
 version = None
 with open(os.path.join('watershed_3d', '_version.py'), 'r') as fid:

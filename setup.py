@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 install_deps = ['tifffile', 'scipy', 'numba', 'pandas', 'numpy',
                 'scikit-image', 'scikit-learn', 'fastremap', 'diplib',
-                'edt', 'pciSeq', 'opencv-python-headless', 'Pillow', 'jupyterlab',
+                'edt', 'pciSeq', 'opencv-python-headless', 'Pillow==9.5', 'jupyterlab',
                 'ipywidgets']
 
 version = None

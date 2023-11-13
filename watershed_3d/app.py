@@ -13,30 +13,33 @@ def app(image_url=None, opts=None):
     Main entry point for 3d watershed segmentation
     image_url: Path to your 3d image to be segmented with watershed. Format must be ZYX
     cfg: dictionary wth user-defined options. The keys of the dict can be:
-        'mode': Should be either '2d_stitch' or '3d'
-        'stitch_threshold': If the overlap is bigger than 'stitch_threshold' then the label
-                            will be passed to the overlapping shape in the following plane.
-                            Default value is 0.009.
-                            This option is relavant only if 'mode' is '2d_stitch' otherwise
-                            it is ignored.
-        'min_size':         Cells on any given 2d plane with area less than min_size are removed.
-                            Default value = 5px. Relevant only if 'mode' is '2d_stitch' otherwise
-                            it is ignored
-        'p_cut':            Similar to the above. Cells on any given 2d plane with area less than
-                            p_cut percentile are removed. Default value is 2 which means the bottom
-                            2nd percentile
-        'do_rolling_ball':  Boolean, if true then the image will be processed with the rolling-ball
-                            algorithm to correct for uneven illumination/exposure. Use that on
-                            extreme cases as it increases execution time massively.
-        'exclude_pages':    List of integers denoting the pages to be excluded from the segmentation.
-        'maxDepth':         Parameter that controls whether two shapes when their boundaries meet, will be
-                            merged or not. Is it is set too high then you will end up with an undersegmented
-                            image (few and very large shapes). If it is too low, then you will have an
-                            oversegmented image (too many and probably small shapes). maxDepth is only
-                            relevant if mode='3d', otherwise it is ignored.
+        'exclude_pages             A list with the planes to ignore. Default is an empty list
+        'mode'                     Either '2d_stitch' or '3d'
+        'stitch_threshold'         If the overlap is bigger than 'stitch_threshold' then the label
+                                   will be passed to the overlapping shape in the following plane.
+                                   Default value is 0.009.
+                                   This option is relevant only if 'mode' is '2d_stitch' otherwise
+                                   it is ignored.
+        'min_size'                 cells on any given 2d plane with area less than min_size are removed.
+                                   Default value = 5px. Relevant only if 'mode' is '2d_stitch' otherwise
+                                   it is ignored. If you do not want to use it in any case, set it to None
+        'p_cut'                    Similar to the above. Cells on any given 2d plane with area less than
+                                   p_cut percentile are removed. Default value is 2 which means the bottom
+                                   0.02 percentile. If you do not want to use it in any case, set it to None
+        'do_rolling_ball'          If True then the rolling ball filter will be applied on the image.
+                                   Useful only in cases where locally there is very high brightness
+                                   and the rest of the image or too dark. Default value is False
+        'maxDepth'                 parameter that controls whether two shapes when their boundaries meet,
+                                   will be merged or not. Is it is set too high then you will end up with an
+                                   undersegmented image (few and very large shapes). If it is too low, then
+                                   you will have an oversegmented image (too many and probably small
+                                   shapes). maxDepth is only relevant if mode='3d', otherwise it is ignored.
+                                   Default value is 1.0
 
+    Note that the p_cut is applied after the min_size. Ie if mode: '2d_stitch' and both min_size, p_cut are
+    not None, then we first filter on min_size and then we apply the p_cut
 
-    returns an array with the segmentation masks. It has same shape as your 3d image. Pages that
+    Returns an array with the segmentation masks. It has same shape as your 3d image. Pages that
     have been excluded are totally black, ie all values are zero
     """
 

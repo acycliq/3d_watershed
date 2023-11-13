@@ -193,23 +193,24 @@ def stitch3D_coo(masks, stitch_threshold=0.25):
 
 def remove_small_cells(cell_labels, min_size=5, p_cut=2):
     regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
-    small_cells = regions[regions.area <= min_size]
-    # logger.info("image: %d: Removing small shapes" % i)
-    # logger.info("image: %d: Found %d shapes with area less than %d" % (i, small_cells.shape[0], min_size))
+    if min_size is not None:
+        small_cells = regions[regions.area <= min_size]
+        # logger.info("image: %d: Removing small shapes" % i)
+        # logger.info("image: %d: Found %d shapes with area less than %d" % (i, small_cells.shape[0], min_size))
 
-    # remove small cells
-    cell_labels = fastremap.mask(cell_labels, small_cells.label.values)
+        # remove small cells
+        cell_labels = fastremap.mask(cell_labels, small_cells.label.values)
     cell_labels, label_map = fastremap.renumber(cell_labels, in_place=False)
 
+    if p_cut is not None:
+        # p_cut = 2
+        regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
+        min_size = np.percentile(regions.area, p_cut)
+        # logger.info("the %dth percentile is: %d" % (p_cut, min_size))
+        small_cells = regions[regions.area <= min_size]
 
-    # p_cut = 2
-    regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
-    min_size = np.percentile(regions.area, p_cut)
-    # logger.info("the %dth percentile is: %d" % (p_cut, min_size))
-    small_cells = regions[regions.area <= min_size]
-
-    cell_labels = fastremap.mask(cell_labels, small_cells.label.values)
-    cell_labels, label_map = fastremap.renumber(cell_labels, in_place=False)
+        cell_labels = fastremap.mask(cell_labels, small_cells.label.values)
+        cell_labels, label_map = fastremap.renumber(cell_labels, in_place=False)
 
     return cell_labels.astype(np.uint64), label_map
 

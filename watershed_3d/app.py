@@ -19,15 +19,21 @@ def app(image_url=None, opts=None):
                             Default value is 0.009.
                             This option is relavant only if 'mode' is '2d_stitch' otherwise
                             it is ignored.
-        'do_rolling_ball': Boolean, if true then the image will be processed with the rolling-ball
+        'min_size':         Cells on any given 2d plane with area less than min_size are removed.
+                            Default value = 5px. Relevant only if 'mode' is '2d_stitch' otherwise
+                            it is ignored
+        'p_cut':            Similar to the above. Cells on any given 2d plane with area less than
+                            p_cut percentile are removed. Default value is 2 which means the bottom
+                            2nd percentile
+        'do_rolling_ball':  Boolean, if true then the image will be processed with the rolling-ball
                             algorithm to correct for uneven illumination/exposure. Use that on
                             extreme cases as it increases execution time massively.
         'exclude_pages':    List of integers denoting the pages to be excluded from the segmentation.
-        'maxDepth': parameter that controls whether two shapes when their boundaries meet, will be
-                    merged or not. Is it is set too high then you will end up with an undersegmented
-                    image (few and very large shapes). If it is too low, then you will have an
-                    oversegmented image (too many and probably small shapes). maxDepth is only
-                    relevant if mode='3d', otherwise it is ignored.
+        'maxDepth':         Parameter that controls whether two shapes when their boundaries meet, will be
+                            merged or not. Is it is set too high then you will end up with an undersegmented
+                            image (few and very large shapes). If it is too low, then you will have an
+                            oversegmented image (too many and probably small shapes). maxDepth is only
+                            relevant if mode='3d', otherwise it is ignored.
 
 
     returns an array with the segmentation masks. It has same shape as your 3d image. Pages that
@@ -37,7 +43,7 @@ def app(image_url=None, opts=None):
     if opts is None:
         opts = {
             'exclude_pages': [], 'do_rolling_ball': False, 'mode': '2d_stitch', 'stitch_threshold': 0.009,
-            'maxDepth': 1.0
+            'maxDepth': 1.0, 'min_size': 5, 'p_cut':2
         }
     assert image_url is not None, "Need to pass the path to your image when you call app()"
 
@@ -50,6 +56,8 @@ def app(image_url=None, opts=None):
         'do_rolling_ball': False,
         'mode': '2d_stitch',
         'stitch_threshold': 0.009,
+        'min_size': 5,
+        'p_cut': 2,
         'maxDepth': 1.0
     }
 

@@ -191,7 +191,7 @@ def stitch3D_coo(masks, stitch_threshold=0.25):
     return masks.astype(np.uint32)
 
 
-def remove_small_cells(i, cell_labels, min_size=5):
+def remove_small_cells(cell_labels, min_size=5, p_cut=2):
     regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
     small_cells = regions[regions.area <= min_size]
     # logger.info("image: %d: Removing small shapes" % i)
@@ -202,7 +202,7 @@ def remove_small_cells(i, cell_labels, min_size=5):
     cell_labels, label_map = fastremap.renumber(cell_labels, in_place=False)
 
 
-    p_cut = 2
+    # p_cut = 2
     regions = pd.DataFrame(regionprops_table(cell_labels, properties=['label', 'area']))
     min_size = np.percentile(regions.area, p_cut)
     # logger.info("the %dth percentile is: %d" % (p_cut, min_size))
@@ -214,7 +214,7 @@ def remove_small_cells(i, cell_labels, min_size=5):
     return cell_labels.astype(np.uint64), label_map
 
 
-def watershed(i, bw_img):
+def watershed(i, bw_img, opts):
 
     # target_dir = os.path.join(Path(opts['microglia_image']).parent, 'debug', 'bw_images')
     # Path(target_dir).mkdir(parents=True, exist_ok=True)
@@ -240,7 +240,7 @@ def watershed(i, bw_img):
     # logger.info('max distance %f' % distance.max())
     cell_labels = np.array(cell_labels)
 
-    cell_labels, _ = remove_small_cells(i, cell_labels)
+    cell_labels, _ = remove_small_cells(cell_labels, opts['min_size'], opts['p_cut'])
     return cell_labels
 
 
@@ -267,7 +267,7 @@ def main(bw_masks, image_3d, opts):
         else:
             # logger.info('Doing watershed on page % d' % i)
             good_pages.append(i)
-            lbl = watershed(i, img)
+            lbl = watershed(i, img, opts)
             labels_list.append(lbl)
     labels = np.stack(labels_list)
     logger.info('Finished watershed')
@@ -292,7 +292,7 @@ def main(bw_masks, image_3d, opts):
 
     dir_name = os.path.join(target_dir, '2d_stitched_segmentation_samples')
     Path(dir_name).mkdir(parents=True, exist_ok=True)
-    unpack(rgb_masks, dir_name, mode="RGB", make_tiles=True, page_ids=good_pages)
+    unpack(rgb_masks, dir_name, mode="RGB", make_tiles=False, page_ids=good_pages)
     logger.info("Saved some segmented images at %s" % dir_name)
 
     return stitched_labels_2
